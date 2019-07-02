@@ -41,7 +41,7 @@ object HelloWorld {
   }
 
   def writeDuplicateReport(uniqueFiles: Iterable[UniqueFile]): Unit = {
-    val fileWriter = new FileWriter("/home/alejandro/Documents/DATA/elec2019/ftp/dups/duplicates.txt", true)
+    val fileWriter = new FileWriter("/home/alejandro/Documents/DATA/elec2019/ftp/dups/duplicates3.txt", true)
 
     try {
       uniqueFiles.foreach(entry => fileWriter.write(entry.toString + "\n"))
@@ -54,12 +54,12 @@ object HelloWorld {
   }
 
   def updateSyncFilter(filesToIgnore: Iterable[String]) {
-    val path = "/home/alejandro/elec2019/tse-prod-dedup.ffs_batch"
+    val path = "/home/alejandro/elec2019/sftp-to-local.ffs_batch"
     val xmlFile = XML.loadFile(path)
 
-    val addExcludeItems = new AddExcludeItems(filesToIgnore.map(str => <Item>{"mirror/" + str}</Item>))
+    val addExcludeItems = new AddExcludeItems(filesToIgnore.map(str => <Item>{str}</Item>))
     object rt1 extends RuleTransformer(addExcludeItems)
-
+/*
     object tr extends RewriteRule {
       override def transform(n: Node): collection.Seq[Node] = n match {
         case sn @ Elem (_, "FolderPairs", _, _, _*) => rt1(sn)
@@ -67,8 +67,8 @@ object HelloWorld {
       }
     }
 
-    object rt2 extends RuleTransformer(tr)
-    val newXml = rt2(xmlFile)
+    object rt2 extends RuleTransformer(tr)*/
+    val newXml = rt1(xmlFile)
     val prettyPrinter = new PrettyPrinter(90,2)
     val fileWriter = new FileWriter(path, false);
     try {
@@ -90,7 +90,8 @@ object HelloWorld {
 
 class UniqueFile(val file : File, val sha1: String, val copies: Array[File]) {
   override def toString: String = {
-    s"{ file: ${file.getName}, sha1: $sha1, copies: ${copies.map(_.getName).mkString("[", ", ", "] }")}"
+    val copiesText = copies.map(copy => "\"" + copy.getName + "\"").mkString("[", ", ", "] }")
+    s"{ 'file' : '${file.getName}', 'sha1': '$sha1', 'copies': $copiesText }"
   }
 }
 
