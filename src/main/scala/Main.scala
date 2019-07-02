@@ -72,7 +72,7 @@ object HelloWorld {
     val prettyPrinter = new PrettyPrinter(90,2)
     val fileWriter = new FileWriter(path, false);
     try {
-      fileWriter.write(prettyPrinter.format(newXml))
+      fileWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + prettyPrinter.format(newXml))
     } finally fileWriter.close()
 
   }
